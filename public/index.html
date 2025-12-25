@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>快手任务管理系统</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#3B82F6',
+            secondary: '#10B981',
+            danger: '#EF4444',
+            dark: '#1E293B',
+            light: '#F8FAFC'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .scrollbar-thin {
+        scrollbar-width: thin;
+      }
+      .scrollbar-thin::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+      }
+      .scrollbar-thin::-webkit-scrollbar-thumb {
+        background-color: rgba(156, 163, 175, 0.5);
+        border-radius: 2px;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+<div class="container mx-auto px-4 py-8 max-w-6xl">
+  <header class="mb-8 text-center">
+    <h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-primary mb-2">快手任务管理系统</h1>
+    <p class="text-gray-600">自动化管理快手极速版任务，高效稳定</p>
+  </header>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- 配置面板 -->
+    <div class="lg:col-span-1 space-y-6">
+      <!-- 账号配置 -->
+      <div class="bg-white rounded-lg shadow-md p-5">
+        <h2 class="text-lg font-semibold mb-4 flex items-center">
+          <i class="fa fa-user-circle text-primary mr-2"></i>账号配置
+        </h2>
+        <div class="space-y-3">
+          <div>
+            <label for="ksck" class="block text-sm font-medium text-gray-700 mb-1">KS Cookie (ksck)</label>
+            <textarea id="ksck" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary" placeholder="输入完整的CK字符串，多个账号用 & 分隔"></textarea>
+            <p class="text-xs text-gray-500 mt-1">每个账号填写完整CK字符串，多个账号用 & 分隔<br>系统会自动解码 URL 编码格式的 Cookie（含 %3D、%2B 等字符）</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 参数配置 -->
+      <div class="bg-white rounded-lg shadow-md p-5">
+        <h2 class="text-lg font-semibold mb-4 flex items-center">
+          <i class="fa fa-sliders text-primary mr-2"></i>任务参数
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="rounds" class="block text-sm font-medium text-gray-700 mb-1">轮数</label>
+            <input type="number" id="rounds" min="1" value="35" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+          </div>
+          <div>
+            <label for="coinLimit" class="block text-sm font-medium text-gray-700 mb-1">金币上限</label>
+            <input type="number" id="coinLimit" min="0" value="500000" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+          </div>
+          <div>
+            <label for="adMinTime" class="block text-sm font-medium text-gray-700 mb-1">观看广告最短时间(秒)</label>
+            <input type="number" id="adMinTime" min="1" value="30" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+          </div>
+          <div>
+            <label for="adMaxTime" class="block text-sm font-medium text-gray-700 mb-1">观看广告最长时间(秒)</label>
+            <input type="number" id="adMaxTime" min="1" value="40" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+          </div>
+          <div>
+            <label for="taskInterval" class="block text-sm font-medium text-gray-700 mb-1">任务间隔(秒)</label>
+            <input type="number" id="taskInterval" min="0" value="10" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+          </div>
+          <div>
+            <label for="roundInterval" class="block text-sm font-medium text-gray-700 mb-1">轮次间隔(秒)</label>
+            <input type="number" id="roundInterval" min="0" value="60" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+          </div>
+          <div>
+            <label for="accountInterval" class="block text-sm font-medium text-gray-700 mb-1">账号间隔(秒)</label>
+            <input type="number" id="accountInterval" min="0" value="30" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+          </div>
+          <div>
+            <label for="tasks" class="block text-sm font-medium text-gray-700 mb-1">执行任务</label>
+            <select id="tasks" multiple class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+              <option value="food" selected>饭补广告</option>
+              <option value="box" selected>宝箱广告</option>
+              <option value="look" selected>看广告得金币</option>
+            </select>
+            <p class="text-xs text-gray-500 mt-1">按住Ctrl键可多选</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 操作按钮 -->
+      <div class="bg-white rounded-lg shadow-md p-5">
+        <h2 class="text-lg font-semibold mb-4 flex items-center">
+          <i class="fa fa-cogs text-primary mr-2"></i>任务控制
+        </h2>
+        <div class="grid grid-cols-2 gap-3">
+          <button id="testConnection" class="flex items-center justify-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
+            <i class="fa fa-check-circle mr-2"></i>测试连接
+          </button>
+          <button id="startTask" class="flex items-center justify-center px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors">
+            <i class="fa fa-play mr-2"></i>开始任务
+          </button>
+          <button id="stopTask" class="flex items-center justify-center px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors" disabled>
+            <i class="fa fa-stop mr-2"></i>停止任务
+          </button>
+          <button id="clearLog" class="flex items-center justify-center px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors">
+            <i class="fa fa-trash mr-2"></i>清空日志
+          </button>
+        </div>
+        <div class="mt-4">
+          <button id="saveConfig" class="w-full flex items-center justify-center px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-800 transition-colors">
+            <i class="fa fa-save mr-2"></i>保存配置
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 日志面板 -->
+    <div class="lg:col-span-2">
+      <div class="bg-white rounded-lg shadow-md h-full flex flex-col">
+        <div class="p-5 border-b border-gray-200">
+          <h2 class="text-lg font-semibold flex items-center">
+            <i class="fa fa-terminal text-primary mr-2"></i>实时日志
+          </h2>
+        </div>
+        <div id="logContainer" class="flex-1 p-4 overflow-y-auto scrollbar-thin bg-gray-50 text-gray-800 font-mono text-sm">
+          <div class="text-gray-500">系统就绪，请配置账号并开始任务...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="mt-10 text-center text-gray-500 text-sm">
+    <p>快手任务管理系统 &copy; 2023</p>
+  </footer>
+</div>
+
+<script>
+  // 页面加载时从本地存储读取配置
+  document.addEventListener('DOMContentLoaded', () => {
+    const savedConfig = localStorage.getItem('kuaishouConfig');
+    if (savedConfig) {
+      const config = JSON.parse(savedConfig);
+      document.getElementById('ksck').value = config.ksck || '';
+      document.getElementById('rounds').value = config.rounds || 35;
+      document.getElementById('coinLimit').value = config.coinLimit || 500000;
+      document.getElementById('adMinTime').value = config.adMinTime || 30;
+      document.getElementById('adMaxTime').value = config.adMaxTime || 40;
+      document.getElementById('taskInterval').value = config.taskInterval || 10;
+      document.getElementById('roundInterval').value = config.roundInterval || 60;
+      document.getElementById('accountInterval').value = config.accountInterval || 30;
+
+      // 设置选中的任务
+      if (config.tasks && config.tasks.length) {
+        const select = document.getElementById('tasks');
+        for (let i = 0; i < select.options.length; i++) {
+          select.options[i].selected = config.tasks.includes(select.options[i].value);
+        }
+      }
+    }
+
+    // 保存配置
+    document.getElementById('saveConfig').addEventListener('click', () => {
+      const tasks = Array.from(document.getElementById('tasks').selectedOptions).map(option => option.value);
+
+      const config = {
+        ksck: document.getElementById('ksck').value,
+        rounds: parseInt(document.getElementById('rounds').value),
+        coinLimit: parseInt(document.getElementById('coinLimit').value),
+        adMinTime: parseInt(document.getElementById('adMinTime').value),
+        adMaxTime: parseInt(document.getElementById('adMaxTime').value),
+        taskInterval: parseInt(document.getElementById('taskInterval').value),
+        roundInterval: parseInt(document.getElementById('roundInterval').value),
+        accountInterval: parseInt(document.getElementById('accountInterval').value),
+        tasks: tasks
+      };
+
+      localStorage.setItem('kuaishouConfig', JSON.stringify(config));
+      addLog('配置已保存到本地', 'info');
+    });
+
+    // 初始化WebSocket连接
+    let ws;
+    function connectWebSocket() {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUri = `${protocol}//${window.location.host}/ws`;
+
+      ws = new WebSocket(wsUri);
+
+      ws.onopen = () => {
+        addLog('已连接到服务器', 'success');
+      };
+
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === 'log') {
+          addLog(data.message, data.level || 'info');
+        } else if (data.type === 'status') {
+          if (data.status === 'running') {
+            document.getElementById('startTask').disabled = true;
+            document.getElementById('stopTask').disabled = false;
+            addLog('任务已开始', 'success');
+          } else if (data.status === 'stopped') {
+            document.getElementById('startTask').disabled = false;
+            document.getElementById('stopTask').disabled = true;
+            addLog('任务已停止', 'info');
+          }
+        }
+      };
+
+      ws.onclose = () => {
+        addLog('与服务器的连接已关闭，尝试重连...', 'warning');
+        setTimeout(connectWebSocket, 3000);
+      };
+
+      ws.onerror = (error) => {
+        addLog(`WebSocket错误: ${error}`, 'error');
+      };
+    }
+
+    connectWebSocket();
+
+    // 添加日志到界面
+    function addLog(message, level = 'info') {
+      const logContainer = document.getElementById('logContainer');
+      const timestamp = new Date().toLocaleTimeString();
+
+      let levelClass = '';
+      let levelIcon = '';
+
+      switch(level) {
+        case 'success':
+          levelClass = 'text-green-600';
+          levelIcon = '<i class="fa fa-check-circle"></i>';
+          break;
+        case 'error':
+          levelClass = 'text-red-600';
+          levelIcon = '<i class="fa fa-exclamation-circle"></i>';
+          break;
+        case 'warning':
+          levelClass = 'text-yellow-600';
+          levelIcon = '<i class="fa fa-exclamation-triangle"></i>';
+          break;
+        case 'info':
+        default:
+          levelClass = 'text-blue-600';
+          levelIcon = '<i class="fa fa-info-circle"></i>';
+      }
+
+      const logEntry = document.createElement('div');
+      logEntry.className = 'mb-1';
+      logEntry.innerHTML = `[${timestamp}] ${levelIcon} ${message}`;
+
+      logContainer.appendChild(logEntry);
+      logContainer.scrollTop = logContainer.scrollHeight;
+    }
+
+    // 清空日志
+    document.getElementById('clearLog').addEventListener('click', () => {
+      document.getElementById('logContainer').innerHTML = '';
+      addLog('日志已清空', 'info');
+    });
+
+    // 发送命令到服务器
+    function sendCommand(command, data = {}) {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          command: command,
+          data: data
+        }));
+      } else {
+        addLog('无法发送命令，未连接到服务器', 'error');
+      }
+    }
+
+    // 测试连接
+    document.getElementById('testConnection').addEventListener('click', () => {
+      addLog('正在测试连接...', 'info');
+      sendCommand('testConnection');
+    });
+
+    // 开始任务
+    document.getElementById('startTask').addEventListener('click', () => {
+      const ksck = document.getElementById('ksck').value.trim();
+      if (!ksck) {
+        addLog('请先填写KS Cookie', 'error');
+        return;
+      }
+
+      const tasks = Array.from(document.getElementById('tasks').selectedOptions).map(option => option.value);
+      if (tasks.length === 0) {
+        addLog('请至少选择一个任务', 'error');
+        return;
+      }
+
+      const config = {
+        ksck: ksck,
+        rounds: parseInt(document.getElementById('rounds').value),
+        coinLimit: parseInt(document.getElementById('coinLimit').value),
+        adMinTime: parseInt(document.getElementById('adMinTime').value),
+        adMaxTime: parseInt(document.getElementById('adMaxTime').value),
+        taskInterval: parseInt(document.getElementById('taskInterval').value),
+        roundInterval: parseInt(document.getElementById('roundInterval').value),
+        accountInterval: parseInt(document.getElementById('accountInterval').value),
+        tasks: tasks
+      };
+
+      // 保存当前配置
+      localStorage.setItem('kuaishouConfig', JSON.stringify(config));
+
+      addLog('准备开始任务...', 'info');
+      sendCommand('startTask', config);
+    });
+
+    // 停止任务
+    document.getElementById('stopTask').addEventListener('click', () => {
+      addLog('正在停止任务...', 'info');
+      sendCommand('stopTask');
+    });
+  });
+</script>
+</body>
+</html>
